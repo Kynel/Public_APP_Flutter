@@ -40,7 +40,6 @@ class MyHomePage extends StatefulWidget {
   // always marked "final".
 
   final String title;
-
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
