@@ -1,9 +1,11 @@
+import 'package:covid_statistics/src/canvas/arrow_clip_path.dart';
 import 'package:covid_statistics/src/controller/covid_statistics_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class App extends GetView<CovidStatisticsController> {
-  const App({Key? key}) : super(key: key);
+  App({Key? key}) : super(key: key);
+  late double headerTopZone;
 
   Widget infoWidget(String title, String value) {
     return Padding(
@@ -30,34 +32,117 @@ class App extends GetView<CovidStatisticsController> {
 
   @override
   Widget build(BuildContext context) {
+    headerTopZone = Get.mediaQuery.padding.top + AppBar().preferredSize.height;
     return Scaffold(
       appBar: AppBar(
         title: Text(
           '코로나 일별 현황',
+          style: TextStyle(color: Colors.white),
         ),
+        backgroundColor: Colors.transparent,
+        leading: Icon(Icons.menu, color: Colors.white),
+        actions: [
+          Container(
+            padding: EdgeInsets.symmetric(horizontal: 15),
+            child: Icon(
+              Icons.notifications,
+              color: Colors.white,
+            ),
+          )
+        ],
+        elevation: 0,
         centerTitle: true,
       ),
-      body: Container(
-        padding: const EdgeInsets.all(15.0),
-        child: Obx(
-          () {
-            var info = controller.covidStatistic.value;
-            return Column(
+      extendBodyBehindAppBar: true,
+      body: Stack(
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.centerRight,
+                end: Alignment.centerLeft,
+                colors: [
+                  Color(0xff3c727c),
+                  Color(0xff33656e),
+                ],
+              ),
+            ),
+          ),
+          Positioned(
+            left: -110,
+            top: headerTopZone + 40,
+            child: Container(
+              child: Image.asset('assets/covid_img.png'),
+              width: Get.size.width * 0.7,
+            ),
+          ),
+          Positioned(
+            top: headerTopZone + 10,
+            // 가운데 정렬할 때에는 left, right 0으로 잡아주고 Center로 씌우면 된다.
+            left: 0,
+            right: 0,
+            child: Center(
+              child: Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 2),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                  color: Color(0xff195f68),
+                ),
+                child: Text(
+                  '07.24 00:00 기준',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+          ),
+          Positioned(
+            top: headerTopZone + 60,
+            right: 40,
+            child: Column(
               children: [
-                infoWidget("기준일", info.stateDt ?? ""),
-                infoWidget("기준시간", info.stateTime ?? ""),
-                infoWidget("확진자 수", info.decideCnt ?? ""),
-                infoWidget("검사진행 수", info.examCnt ?? ""),
-                infoWidget("사망자 수", info.deathCnt ?? ""),
-                infoWidget("치료중 환자 수", info.careCnt ?? ""),
-                infoWidget("결과 음성 수", info.resutlNegCnt ?? ""),
-                infoWidget("누적 검사 수", info.accExamCnt ?? ""),
-                infoWidget("누적 검사 완료 수", info.accExamCompCnt ?? ""),
-                infoWidget("누적 확진률", info.accDefRate ?? ""),
+                Text(
+                  "확진자",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                  ),
+                ),
+                SizedBox(height: 5),
+                Row(
+                  children: [
+                    ClipPath(
+                      clipper: ArrowClipPath(),
+                      child: Container(
+                        width: 20,
+                        height: 20,
+                        color: Color(0xffcf5f51),
+                      ),
+                    ),
+                    Text(
+                      "1,629",
+                      style: TextStyle(
+                        color: Color(0xffcf5f51),
+                        fontWeight: FontWeight.bold,
+                        fontSize: 50,
+                      ),
+                    ),
+                  ],
+                ),
+                Text(
+                  "187,362",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                  ),
+                ),
               ],
-            );
-          },
-        ),
+            ),
+          )
+        ],
       ),
     );
   }
