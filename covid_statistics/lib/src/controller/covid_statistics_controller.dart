@@ -1,10 +1,12 @@
 import 'package:covid_statistics/src/model/covid_statistics.dart';
 import 'package:covid_statistics/src/repository/covid_statistics_repository.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 
 class CovidStatisticsController extends GetxController {
   late CovidStatisticsRepository _covidStatisticsRepository;
-  Rx<Covid19StatisticsModel> covidStatistic = Covid19StatisticsModel().obs;
+  Rx<Covid19StatisticsModel> _todayData = Covid19StatisticsModel().obs;
+  RxList<Covid19StatisticsModel> _weekDatas = <Covid19StatisticsModel>[].obs;
 
   @override
   void onInit() {
@@ -14,9 +16,20 @@ class CovidStatisticsController extends GetxController {
   }
 
   void fetchCovidState() async {
-    var result = await _covidStatisticsRepository.fetchCovid19Statistics();
-    if (result != null) {
-      covidStatistic(result);
+    var startDate = DateFormat('yyyyMMdd')
+        .format(DateTime.now().subtract(Duration(days: 8)));
+    var endDate = DateFormat('yyyyMMdd').format(DateTime.now());
+    var result = await _covidStatisticsRepository.fetchCovid19Statistics(
+        startDate: startDate, endDate: endDate);
+    print(result.length);
+    if (result.isNotEmpty) {
+      for (var i = 0; i < result.length; i++) {
+        if (i < result.length - 1) {
+          result[i].updateCalcAboutYesterday(result[i + 1]);
+        }
+      }
+      _weekDatas.addAll(result.sublist(0, result.length - 1));
+      print(_weekDatas);
     }
   }
 }

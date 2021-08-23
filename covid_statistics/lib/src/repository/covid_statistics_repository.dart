@@ -138,22 +138,6 @@ class CovidStatisticsRepository {
 <stateTime>00:00</stateTime>
 <updateDt>2021-08-20 09:46:00.669</updateDt>
 </item>
-<item>
-<accDefRate>1.8908234953</accDefRate>
-<accExamCnt>12309280</accExamCnt>
-<accExamCompCnt>11746575</accExamCompCnt>
-<careCnt>26181</careCnt>
-<clearCnt>193778</clearCnt>
-<createDt>2021-08-14 09:45:15.42</createDt>
-<deathCnt>2148</deathCnt>
-<decideCnt>222107</decideCnt>
-<examCnt>562705</examCnt>
-<resutlNegCnt>11524468</resutlNegCnt>
-<seq>603</seq>
-<stateDt>20210814</stateDt>
-<stateTime>00:00</stateTime>
-<updateDt>2021-08-20 09:45:45.928</updateDt>
-</item>
 </items>
 <numOfRows>10</numOfRows>
 <pageNo>1</pageNo>
@@ -173,15 +157,23 @@ class CovidStatisticsRepository {
     );
   }
 
-  Future<Covid19StatisticsModel> fetchCovid19Statistics() async {
-    // var response =
-    //     await _dio.get("/openapi/service/rest/Covid19/getCovid19InfStateJson");
+  Future<List<Covid19StatisticsModel>> fetchCovid19Statistics(
+      {String? startDate, String? endDate}) async {
+    var query = Map<String, String>();
+    if (startDate != null) query.putIfAbsent('startCreateDt', () => startDate);
+    if (endDate != null) query.putIfAbsent('endCreateDt', () => endDate);
+    // var response = await _dio.get(
+    //     "/openapi/service/rest/Covid19/getCovid19InfStateJson",
+    //     queryParameters: query);
     // print(response);
     // final document = XmlDocument.parse(response.data);
     final document = XmlDocument.parse(bookshelfXml);
     final results = document.findAllElements('item');
     if (results.isNotEmpty) {
-      return Covid19StatisticsModel.fromXml(results.first);
+      return results
+          .map<Covid19StatisticsModel>(
+              (element) => Covid19StatisticsModel.fromXml(element))
+          .toList();
     } else {
       return Future.value(null);
     }
