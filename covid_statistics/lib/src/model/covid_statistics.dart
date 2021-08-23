@@ -1,3 +1,4 @@
+import 'package:covid_statistics/src/utils/data_utils.dart';
 import 'package:covid_statistics/src/utils/xml_utils.dart';
 import 'package:xml/xml.dart';
 
@@ -16,7 +17,7 @@ class Covid19StatisticsModel {
   double calcClearCnt = 0;
   double? seq;
   double? resutlNegCnt;
-  String? stateDt;
+  DateTime? stateDt;
   String? stateTime;
   String? createDt;
   String? updateDt;
@@ -36,6 +37,9 @@ class Covid19StatisticsModel {
     this.stateTime,
     this.updateDt,
   });
+  factory Covid19StatisticsModel.empty() {
+    return Covid19StatisticsModel();
+  }
 
   factory Covid19StatisticsModel.fromXml(XmlElement xml) {
     return Covid19StatisticsModel(
@@ -50,7 +54,9 @@ class Covid19StatisticsModel {
         resutlNegCnt: XmlUtils.searchResultForDouble(xml, 'resutlNegCnt'),
         seq: XmlUtils.searchResultForDouble(xml, 'seq'),
         createDt: XmlUtils.searchResultForString(xml, 'createDt'),
-        stateDt: XmlUtils.searchResultForString(xml, 'stateDt'),
+        stateDt: XmlUtils.searchResultForString(xml, 'stateDt') != ''
+            ? DateTime.parse(XmlUtils.searchResultForString(xml, 'stateDt'))
+            : null,
         stateTime: XmlUtils.searchResultForString(xml, 'stateTime'),
         updateDt: XmlUtils.searchResultForString(xml, 'updateDt'));
   }
@@ -77,4 +83,7 @@ class Covid19StatisticsModel {
   void _updateCalcClearCnt(double beforeCnt) {
     calcClearCnt = clearCnt! - beforeCnt;
   }
+
+  String get standardDayString =>
+      '${DataUtils.simpleDayFormat(stateDt!)} $stateTime 기준';
 }

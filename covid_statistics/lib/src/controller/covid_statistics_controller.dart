@@ -1,3 +1,4 @@
+import 'package:covid_statistics/src/canvas/arrow_clip_path.dart';
 import 'package:covid_statistics/src/model/covid_statistics.dart';
 import 'package:covid_statistics/src/repository/covid_statistics_repository.dart';
 import 'package:get/get.dart';
@@ -29,7 +30,20 @@ class CovidStatisticsController extends GetxController {
         }
       }
       _weekDatas.addAll(result.sublist(0, result.length - 1));
+      _todayData(_weekDatas.first);
       print(_weekDatas);
+    }
+  }
+
+  Covid19StatisticsModel get todayData => _todayData.value;
+
+  ArrowDirection calculateUpDown(double value) {
+    if (value == 0) {
+      return ArrowDirection.MIDDLE;
+    } else if (value > 0) {
+      return ArrowDirection.UP;
+    } else {
+      return ArrowDirection.DOWN;
     }
   }
 }

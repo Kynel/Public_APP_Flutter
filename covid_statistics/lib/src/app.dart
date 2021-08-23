@@ -67,11 +67,13 @@ class App extends GetView<CovidStatisticsController> {
               borderRadius: BorderRadius.circular(20),
               color: Color(0xff195f68),
             ),
-            child: Text(
-              '07.24 00:00 기준',
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
+            child: Obx(
+              () => Text(
+                controller.todayData.standardDayString,
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
           ),
@@ -80,61 +82,69 @@ class App extends GetView<CovidStatisticsController> {
       Positioned(
         top: headerTopZone + 60,
         right: 40,
-        child: CovidStatisticsViewer(
-          title: '확진자',
-          titleColor: Colors.white,
-          subValueColor: Colors.white,
-          addedCount: 1629,
-          totalCount: 187362,
-          upDown: ArrowDirection.UP,
+        child: Obx(
+          () => CovidStatisticsViewer(
+            title: '확진자',
+            titleColor: Colors.white,
+            subValueColor: Colors.white,
+            addedCount: controller.todayData.calcDecideCnt,
+            totalCount: controller.todayData.decideCnt!,
+            upDown:
+                controller.calculateUpDown(controller.todayData.calcDecideCnt),
+          ),
         ),
       ),
     ];
   }
 
   Widget _todayStatistics() {
-    return Row(
-      children: [
-        Expanded(
-          child: CovidStatisticsViewer(
-            title: '격리해제',
-            addedCount: 1629,
-            totalCount: 187362,
-            upDown: ArrowDirection.UP,
-            dense: true,
+    return Obx(
+      () => Row(
+        children: [
+          Expanded(
+            child: CovidStatisticsViewer(
+              title: '격리해제',
+              addedCount: controller.todayData.calcClearCnt,
+              totalCount: controller.todayData.clearCnt!,
+              upDown:
+                  controller.calculateUpDown(controller.todayData.calcClearCnt),
+              dense: true,
+            ),
           ),
-        ),
-        Container(
-          height: 60,
-          child: VerticalDivider(
-            color: Color(0xffc7c7c7),
+          Container(
+            height: 60,
+            child: VerticalDivider(
+              color: Color(0xffc7c7c7),
+            ),
           ),
-        ),
-        Expanded(
-          child: CovidStatisticsViewer(
-            title: '검사중',
-            addedCount: 1629,
-            totalCount: 187362,
-            upDown: ArrowDirection.DOWN,
-            dense: true,
+          Expanded(
+            child: CovidStatisticsViewer(
+              title: '검사중',
+              addedCount: controller.todayData.calcExamCnt,
+              totalCount: controller.todayData.examCnt!,
+              upDown:
+                  controller.calculateUpDown(controller.todayData.calcExamCnt),
+              dense: true,
+            ),
           ),
-        ),
-        Container(
-          height: 60,
-          child: VerticalDivider(
-            color: Color(0xffc7c7c7),
+          Container(
+            height: 60,
+            child: VerticalDivider(
+              color: Color(0xffc7c7c7),
+            ),
           ),
-        ),
-        Expanded(
-          child: CovidStatisticsViewer(
-            title: '사망자',
-            addedCount: 1629,
-            totalCount: 187362,
-            upDown: ArrowDirection.MIDDLE,
-            dense: true,
+          Expanded(
+            child: CovidStatisticsViewer(
+              title: '사망자',
+              addedCount: controller.todayData.calcDeathCnt,
+              totalCount: controller.todayData.deathCnt!,
+              upDown:
+                  controller.calculateUpDown(controller.todayData.calcDeathCnt),
+              dense: true,
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
