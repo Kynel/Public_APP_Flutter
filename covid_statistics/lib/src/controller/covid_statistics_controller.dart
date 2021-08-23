@@ -8,6 +8,7 @@ class CovidStatisticsController extends GetxController {
   late CovidStatisticsRepository _covidStatisticsRepository;
   Rx<Covid19StatisticsModel> _todayData = Covid19StatisticsModel().obs;
   RxList<Covid19StatisticsModel> _weekDatas = <Covid19StatisticsModel>[].obs;
+  double maxDecideValue = 0;
 
   @override
   void onInit() {
@@ -27,15 +28,19 @@ class CovidStatisticsController extends GetxController {
       for (var i = 0; i < result.length; i++) {
         if (i < result.length - 1) {
           result[i].updateCalcAboutYesterday(result[i + 1]);
+          if (maxDecideValue < result[i].calcDecideCnt) {
+            maxDecideValue = result[i].calcDecideCnt;
+          }
         }
       }
-      _weekDatas.addAll(result.sublist(0, result.length - 1));
-      _todayData(_weekDatas.first);
+      _weekDatas.addAll(result.sublist(0, result.length - 1).reversed);
+      _todayData(_weekDatas.last);
       print(_weekDatas);
     }
   }
 
   Covid19StatisticsModel get todayData => _todayData.value;
+  List<Covid19StatisticsModel> get weekDatas => _weekDatas;
 
   ArrowDirection calculateUpDown(double value) {
     if (value == 0) {
